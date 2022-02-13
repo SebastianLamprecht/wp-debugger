@@ -1,0 +1,77 @@
+#debug {
+  position: fixed;
+  width: calc(60% - 100px);
+  height: 50%;
+  top: 50px;
+  right: 50px;
+  z-index: 99999999;
+  background-color: #303841;
+  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  font-family: consolas;
+  overflow: auto;
+  resize: both;
+  box-shadow: 0px 0px 14px 8px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0px 0px 14px 8px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 14px 8px rgba(0, 0, 0, 0.3);
+}
+#debug.minimized {
+  width: 80px !important;
+  height: 80px !important;
+  overflow: hidden;
+  border-radius: 40px;
+  resize: none;
+  transition: 0.3s;
+}
+#debug.minimized .data-block {
+  opacity: 0;
+}
+#debug.minimized .debug-action-bar {
+  right: 75px;
+}
+#debug .data-block .caller {
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-right: 50px;
+}
+#debug .data-block .caller a::before {
+  content: "-";
+  border: 1px solid #c8c8c8;
+  color: white;
+  font-size: 12px;
+  width: 20px;
+  margin-right: 10px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+#debug .data-block pre {
+  transition: 0.3s;
+}
+#debug .data-block.minimized pre {
+  height: 0;
+}
+#debug .data-block.minimized a::before {
+  content: "+";
+}
+#debug .debug-action-bar {
+  position: fixed;
+  top: 75px;
+  right: 100px;
+  transition: 0.3s;
+}
+#debug .debug-action-bar .toggle-size {
+  color: white;
+  background-color: #a0331b;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+/*# sourceMappingURL=style.css.map */
