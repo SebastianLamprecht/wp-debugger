@@ -17,15 +17,30 @@ if ( ! class_exists( 'Debugger' ) ) {
         public static $baseurl;
 
         public static function init() {
+            self::$data = array();
             self::$basedir = plugin_dir_path( __FILE__ );
             self::$baseurl = plugin_dir_url( __FILE__ );
             self::$var_dump = false;
-            self::$data = array();
 
+            add_action( 'init', array( __CLASS__, 'init_session' ) );
             add_action( 'wp_enqueue_scripts', array( __CLASS__, 'loadScripts' ) );
             add_action( 'admin_enqueue_scripts', array( __CLASS__, 'loadScripts' ) );
             add_action( 'wp_footer', array( __CLASS__, 'outputWindow' ) );
             add_action( 'admin_footer', array( __CLASS__, 'outputWindow' ) );
+        }
+
+        public static function init_session() {
+            if ( ! session_id() ) {
+                session_start();
+            }
+
+            if ( isset( $_POST['_debugger_clear_persistent_data'] ) ) {
+                self::clear_persistent_data();
+            }
+
+            if ( isset( $_SESSION['_debugger_data'] ) ) {
+                self::$data = array_merge( self::$data, $_SESSION['_debugger_data'] );
+            }
         }
 
         public static function loadScripts() {
@@ -44,6 +59,10 @@ if ( ! class_exists( 'Debugger' ) ) {
             ?>
 
             <div id="debug">
+                <form method="POST" class="mb-3">
+                    <button type="submit" class="button" name="_debugger_clear_persistent_data" value="true"><?php _e( 'Clear persistent data', 'debugger' ) ?></button>
+                </form>
+
                 <?php foreach ( self::$data as $data_block ) : ?>
                     <div class="data-block">
                         <div class="caller"><a href="#"></a><?php print_r( $data_block['caller'] ); ?></div>
@@ -69,6 +88,31 @@ if ( ! class_exists( 'Debugger' ) ) {
                 'data'      => $data,
                 'caller'    => $caller,
             );
+        }
+
+        public static function debug_p( $data, $clear_previous = false ) {
+            $backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1 )[0];
+            $caller = 'PERSISTENT: ' . $backtrace['file'] . ':' . $backtrace['line'];
+
+            if ( ! isset( $_SESSION['_debugger_data'] ) || $clear_previous ) {
+                $_SESSION['_debugger_data'] = array();
+            }
+
+            $new_data = array(
+                'data'      => $data,
+                'caller'    => $caller,
+            );
+
+            if ( ! in_array( $new_data, $_SESSION['_debugger_data'] ) ) {
+                $_SESSION['_debugger_data'][] = $new_data;
+            }
+
+        }
+
+        public static function clear_persistent_data() {
+            if ( isset( $_SESSION['_debugger_data'] ) ) {
+                unset( $_SESSION['_debugger_data'] );
+            }
         }
 
     }
